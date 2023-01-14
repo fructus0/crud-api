@@ -4,7 +4,6 @@ import { Response } from '../router/response';
 import { UserDto } from '../entities/user/userDto';
 import { HttpStatusCodes } from '../constants/http';
 import { UserValidator } from '../validators/user.validator';
-import { ValidationError } from '../errors/validationError';
 import { NotFoundError } from '../errors/notFoundError';
 
 export class UserController {
@@ -58,11 +57,7 @@ export class UserController {
 
     UserValidator.validateRequestKeys(userDto);
 
-    const errors = UserValidator.validateUserDto(userDto);
-
-    if (errors.length !== 0) {
-      throw new ValidationError(errors);
-    }
+    UserValidator.validateUserDto(userDto);
 
     const user = this.userStore.updateUser(userId, userDto as UserDto);
 
@@ -96,11 +91,7 @@ export class UserController {
 
     UserValidator.validateRequestKeys(userDto);
 
-    const errors = UserValidator.validateUserDto(userDto);
-
-    if (errors.length !== 0) {
-      throw new ValidationError(errors);
-    }
+    UserValidator.validateUserDto(userDto);
 
     const addedUser = this.userStore.addUser(userDto as UserDto);
 

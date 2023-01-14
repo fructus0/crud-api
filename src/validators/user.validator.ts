@@ -5,6 +5,7 @@ import { KeyWithValidationRules } from './rules/validationRule';
 import { IsTypeOf } from './rules/isTypeOf';
 import { IsArray } from './rules/isArray';
 import { FieldValidationError } from '../errors/fieldValidationError';
+import { ValidationError } from '../errors/validationError';
 
 const userDtoValidationRules: KeyWithValidationRules<UserDto>[] = [
   {
@@ -28,7 +29,7 @@ const userDtoValidationRules: KeyWithValidationRules<UserDto>[] = [
 ];
 
 export class UserValidator {
-  public static validateUserDto = (body: Record<string, any>): FieldValidationError[] => {
+  public static validateUserDto = (body: Record<string, any>): void => {
     const keys = Object.keys(body);
 
     const validationErrors: FieldValidationError[] = [];
@@ -41,7 +42,9 @@ export class UserValidator {
       });
     }
 
-    return validationErrors;
+    if (validationErrors.length !== 0) {
+      throw new ValidationError(validationErrors);
+    }
   };
 
   public static validateRequestKeys = (body: Record<string, any>): void => {

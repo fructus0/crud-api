@@ -10,14 +10,14 @@ export class IsArray implements ValidationRule {
 
   public checkProperty = (propertyName: string, propertyValue: any) => {
     if (!Array.isArray(propertyValue)) {
-      return [new FieldValidationError(`Property '${propertyName}' must be of type array.`)];
+      return [new FieldValidationError(`Property ${propertyName} must be of type array.`)];
     }
 
     const validationErrors: FieldValidationError[] = [];
 
-    propertyValue.forEach((item) => {
+    propertyValue.forEach((item, index) => {
       if (typeof item !== this.itemType) {
-        const error = new FieldValidationError(`Item ${item} in '${propertyName}' must be of type ${this.itemType}.`);
+        const error = new FieldValidationError(`Item on position ${index} in ${propertyName} must be of type ${this.itemType}.`);
 
         validationErrors.push(error);
       }
