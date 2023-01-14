@@ -1,10 +1,8 @@
 import { User } from '../entities/user/user';
 import { UserDto } from '../entities/user/userDto';
 
-export class UserStore {
-  private users: User[] = [
-    new User('Aleksey', 13, ['play computer games']),
-  ];
+class UserStore {
+  private users: User[] = [];
 
   public getUserById = (
     id: string,
@@ -40,4 +38,12 @@ export class UserStore {
   public deleteUser = (userId: string): void => {
     this.users = this.users.filter((user) => user.getId() !== userId);
   };
+
+  public clearStore = () => {
+    this.users = [];
+  };
 }
+
+const userStore = new UserStore();
+
+export { userStore, UserStore };

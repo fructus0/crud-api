@@ -6,9 +6,9 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": ["./tsconfig.json"]
   },
-  "ignorePatterns": ["*.config.js"],
+  "root": true,
   "rules": {
     "import/prefer-default-export": "off",
     "no-restricted-syntax": "off"

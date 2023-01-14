@@ -1,4 +1,4 @@
-import { UserStore } from '../store/userStore';
+import { UserStore, userStore } from '../store/userStore';
 import { Request } from '../router/request';
 import { Response } from '../router/response';
 import { UserDto } from '../entities/user/userDto';
@@ -10,7 +10,7 @@ export class UserController {
   private userStore: UserStore;
 
   constructor() {
-    this.userStore = new UserStore();
+    this.userStore = userStore;
   }
 
   public getAllUsers = async (

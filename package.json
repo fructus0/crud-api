@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.ts",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start:dev": "nodemon",
     "start:prod": "webpack --mode=production --node-env=production && node dist/main.js",
     "lint:check": "eslint .",
+    "tests": "jest",
     "lint:fix": "eslint . --fix"
   },
   "repository": {
