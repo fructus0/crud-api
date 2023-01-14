@@ -1,10 +1,44 @@
 import { createServer } from 'http';
 import { config } from 'dotenv';
+import { UserController } from './controllers/user.controller';
+import { Router } from './router/router';
+import { HttpMethods } from './constants/http';
+import { Request } from './router/request';
+import { Response } from './router/response';
 
 config();
 
-createServer((req, res) => {
-  res.writeHead(200, { 'Content-type': 'text/plain' });
+const userController = new UserController();
 
-  res.end('Hello World');
-}).listen(process.env.PUBLISHED_PORT);
+const userRouter = new Router([
+  {
+    path: 'api/users',
+    method: HttpMethods.GET,
+    handler: userController.getAllUsers,
+  },
+  {
+    path: 'api/users/:id',
+    method: HttpMethods.GET,
+    handler: userController.getUserById,
+  },
+  {
+    path: 'api/users/:id',
+    method: HttpMethods.PUT,
+    handler: userController.updateUser,
+  },
+  {
+    path: 'api/users/:id',
+    method: HttpMethods.DELETE,
+    handler: userController.deleteUser,
+  },
+  {
+    path: 'api/users',
+    method: HttpMethods.POST,
+    handler: userController.createUser,
+  },
+]);
+
+createServer(
+  { IncomingMessage: Request, ServerResponse: Response },
+  userRouter.actionHandler,
+).listen(process.env.PUBLISHED_PORT);
