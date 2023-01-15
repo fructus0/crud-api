@@ -19,7 +19,7 @@ afterEach(() => {
 });
 
 describe('Users API', () => {
-  describe('GET /users', () => {
+  describe('GET /api/users', () => {
     it('should_return_empty_array_on_no_data_in_store', async () => {
       const response = await request.get('/api/users');
 
@@ -27,21 +27,62 @@ describe('Users API', () => {
       expect(response.body).toEqual([]);
     });
 
-    describe('GET /users/:id', () => {
-      it('should_return_an_error_on_no_data_in_store', async () => {
-        const mockId = uuidv4();
+    it('should_return_collection_of_users', async () => {
+      const createUserRequest: UserDto = {
+        username: 'username',
+        age: 1,
+        hobbies: ['hobby'],
+      };
 
-        const response = await request.get(`/api/users/${mockId}`);
+      const { body: createdUserResponseBody } = await request.post('/api/users').send(createUserRequest);
 
-        expect(response.status).toBe(HttpStatusCodes.NOT_FOUND);
-        expect(response.body).toEqual({
-          message: 'User not found.',
-        });
+      const response = await request.get('/api/users');
+
+      expect(response.status).toBe(HttpStatusCodes.OK);
+      expect(response.body).toEqual([
+        createdUserResponseBody,
+      ]);
+    });
+  });
+
+  describe('GET /api/users/:id', () => {
+    it('should_return_user_by_id', async () => {
+      const createUserRequest: UserDto = {
+        username: 'username',
+        age: 1,
+        hobbies: ['hobby'],
+      };
+
+      const { body: createdUserResponseBody } = await request.post('/api/users').send(createUserRequest);
+
+      const response = await request.get(`/api/users/${createdUserResponseBody.id}`);
+
+      expect(response.status).toBe(HttpStatusCodes.OK);
+      expect(response.body).toEqual(createdUserResponseBody);
+    });
+
+    it('should_throw_an_error_on_invalid_uuid', async () => {
+      const response = await request.get('/api/users/someInvalidUuid');
+
+      expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
+      expect(response.body).toEqual({
+        message: 'Invalid uuid.',
+      });
+    });
+
+    it('should_throw_an_error_on_no_existent_user', async () => {
+      const mockId = uuidv4();
+
+      const response = await request.get(`/api/users/${mockId}`);
+
+      expect(response.status).toBe(HttpStatusCodes.NOT_FOUND);
+      expect(response.body).toEqual({
+        message: 'User not found.',
       });
     });
   });
 
-  describe('POST /users', () => {
+  describe('POST /api/users', () => {
     it('creates_user_in_store_should_return_created_user_in_response', async () => {
       const createUserRequest: UserDto = {
         username: 'username',
@@ -53,29 +94,44 @@ describe('Users API', () => {
 
       const userInStore = userStore.getUserById(response.body.id);
 
-      expect(response.status).toEqual(HttpStatusCodes.CREATED);
+      expect(response.status).toBe(HttpStatusCodes.CREATED);
       expect(response.body).toEqual(userInStore);
     });
-  });
 
-  describe('GET /users/:id', () => {
-    it('should_return_user_with_appropriate_id', async () => {
-      const createUserRequest: UserDto = {
+    it('should_throw_an_error_on_missing_required_fields', async () => {
+      const invalidUserRequest = {
         username: 'username',
-        age: 1,
-        hobbies: ['hobby'],
       };
 
-      const { body: createdUserRequestBody } = await request.post('/api/users').send(createUserRequest);
+      const response = await request.post('/api/users').send(invalidUserRequest);
 
-      const getResponse = await request.get(`/api/users/${createdUserRequestBody.id}`);
+      expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
+      expect(response.body).toEqual({
+        message: 'age, hobbies are required',
+      });
+    });
 
-      expect(getResponse.status).toBe(HttpStatusCodes.OK);
-      expect(getResponse.body).toEqual(createdUserRequestBody);
+    it('should_trow_an_error_on_bad_types_in_fields', async () => {
+      const invalidUserRequest = {
+        username: 12,
+        age: '11',
+        hobbies: 'hobbies',
+      };
+
+      const response = await request.post('/api/users').send(invalidUserRequest);
+
+      expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
+      expect(response.body).toEqual({
+        violations: [
+          'Property username must be of type string.',
+          'Property age must be of type number.',
+          'Property hobbies must be of type array.',
+        ],
+      });
     });
   });
 
-  describe('PUT /users/:id', () => {
+  describe('PUT /api/users/:id', () => {
     it('should_return_updated_user_with_appropriate_id', async () => {
       const createUserRequest: UserDto = {
         username: 'username',
@@ -89,19 +145,66 @@ describe('Users API', () => {
         hobbies: [],
       };
 
-      const { body: createdUserRequestBody } = await request.post('/api/users').send(createUserRequest);
+      const { body: createdUserResponseBody } = await request.post('/api/users').send(createUserRequest);
 
-      const putResponse = await request.put(`/api/users/${createdUserRequestBody.id}`).send(updateUserRequest);
+      const putResponse = await request.put(`/api/users/${createdUserResponseBody.id}`).send(updateUserRequest);
 
       expect(putResponse.status).toBe(HttpStatusCodes.OK);
       expect(putResponse.body).toEqual({
-        id: createdUserRequestBody.id,
+        id: createdUserResponseBody.id,
         ...updateUserRequest,
+      });
+    });
+
+    it('should_throw_an_error_on_invalid_uuid', async () => {
+      const response = await request.put('/api/users/someInvalidUuid');
+
+      expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
+      expect(response.body).toEqual({
+        message: 'Invalid uuid.',
+      });
+    });
+
+    it('should_throw_an_error_on_no_existent_user', async () => {
+      const mockId = uuidv4();
+
+      const response = await request.put(`/api/users/${mockId}`);
+
+      expect(response.status).toBe(HttpStatusCodes.NOT_FOUND);
+      expect(response.body).toEqual({
+        message: 'User not found.',
+      });
+    });
+
+    it('should_trow_an_error_on_bad_types_in_fields', async () => {
+      const createUserRequest: UserDto = {
+        username: 'username',
+        age: 1,
+        hobbies: ['hobby'],
+      };
+
+      const invalidUserRequest = {
+        username: 12,
+        age: '11',
+        hobbies: 'hobbies',
+      };
+
+      const { body: createdUserResponseBody } = await request.post('/api/users').send(createUserRequest);
+
+      const response = await request.put(`/api/users/${createdUserResponseBody.id}`).send(invalidUserRequest);
+
+      expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
+      expect(response.body).toEqual({
+        violations: [
+          'Property username must be of type string.',
+          'Property age must be of type number.',
+          'Property hobbies must be of type array.',
+        ],
       });
     });
   });
 
-  describe('DELETE /users/:id', () => {
+  describe('DELETE /api/users/:id', () => {
     it('should_delete_user_from_store_and_returns_204_status', async () => {
       const createUserRequest: UserDto = {
         username: 'username',
@@ -109,11 +212,31 @@ describe('Users API', () => {
         hobbies: ['hobby'],
       };
 
-      const { body: createdUserRequestBody } = await request.post('/api/users').send(createUserRequest);
+      const { body: createdUserResponseBody } = await request.post('/api/users').send(createUserRequest);
 
-      const deleteResponse = await request.delete(`/api/users/${createdUserRequestBody.id}`);
+      const deleteResponse = await request.delete(`/api/users/${createdUserResponseBody.id}`);
 
       expect(deleteResponse.status).toBe(HttpStatusCodes.NO_CONTENT);
+    });
+
+    it('should_throw_an_error_on_invalid_uuid', async () => {
+      const response = await request.delete('/api/users/someInvalidUuid');
+
+      expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
+      expect(response.body).toEqual({
+        message: 'Invalid uuid.',
+      });
+    });
+
+    it('should_throw_an_error_on_no_existent_user', async () => {
+      const mockId = uuidv4();
+
+      const response = await request.put(`/api/users/${mockId}`);
+
+      expect(response.status).toBe(HttpStatusCodes.NOT_FOUND);
+      expect(response.body).toEqual({
+        message: 'User not found.',
+      });
     });
   });
 });

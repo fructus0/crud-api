@@ -9,10 +9,9 @@
     "baseUrl": "./src",
     "alwaysStrict": true,
     "strict": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "allowJs": false,
     "esModuleInterop": true
   },
-  "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
