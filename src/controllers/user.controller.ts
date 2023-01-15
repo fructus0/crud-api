@@ -5,9 +5,10 @@ import { UserDto } from '../entities/user/userDto';
 import { HttpStatusCodes } from '../constants/http';
 import { UserValidator } from '../validators/user.validator';
 import { NotFoundError } from '../errors/notFoundError';
+import { UserMultiModeStore } from '../store/userMultiModeStore';
 
 export class UserController {
-  private userStore: UserStore;
+  private userStore: UserStore | UserMultiModeStore;
 
   constructor() {
     this.userStore = userStore;
@@ -17,7 +18,7 @@ export class UserController {
     request: Request,
     response: Response,
   ): Promise<void> => {
-    const users = this.userStore.getAllUsers();
+    const users = await this.userStore.getAllUsers();
 
     response.json(HttpStatusCodes.OK, users);
   };
@@ -30,7 +31,7 @@ export class UserController {
 
     UserValidator.validateUuid(userId);
 
-    const user = this.userStore.getUserById(userId);
+    const user = await this.userStore.getUserById(userId);
 
     if (!user) {
       throw new NotFoundError('User not found.');
@@ -47,7 +48,7 @@ export class UserController {
 
     UserValidator.validateUuid(userId);
 
-    const appropriateUser = this.userStore.getUserById(userId);
+    const appropriateUser = await this.userStore.getUserById(userId);
 
     if (!appropriateUser) {
       throw new NotFoundError('User not found.');
@@ -59,7 +60,7 @@ export class UserController {
 
     UserValidator.validateUserDto(userDto);
 
-    const user = this.userStore.updateUser(userId, userDto as UserDto);
+    const user = await this.userStore.updateUser(userId, userDto as UserDto);
 
     response.json(HttpStatusCodes.OK, user);
   };
@@ -72,7 +73,7 @@ export class UserController {
 
     UserValidator.validateUuid(userId);
 
-    const appropriateUser = this.userStore.getUserById(userId);
+    const appropriateUser = await this.userStore.getUserById(userId);
 
     if (!appropriateUser) {
       throw new NotFoundError('User not found.');
@@ -93,7 +94,7 @@ export class UserController {
 
     UserValidator.validateUserDto(userDto);
 
-    const addedUser = this.userStore.addUser(userDto as UserDto);
+    const addedUser = await this.userStore.addUser(userDto as UserDto);
 
     response.json(HttpStatusCodes.CREATED, addedUser);
   };

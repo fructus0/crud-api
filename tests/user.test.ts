@@ -1,21 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import supertest from 'supertest';
-import { createServer } from 'http';
-import { Request } from '../src/router/request';
-import { Response } from '../src/router/response';
-import { userRouter } from '../src/router/userRouter';
 import { UserDto } from '../src/entities/user/userDto';
 import { HttpStatusCodes } from '../src/constants/http';
-import { userStore } from '../src/store/userStore';
+import { UserStore, userStore } from '../src/store/userStore';
+import { App } from '../src/app';
 
-const request = supertest(createServer(
-  { IncomingMessage: Request, ServerResponse: Response },
-  userRouter.actionHandler,
-));
+const request = supertest(new App().createApplication());
 
 afterEach(() => {
   // tests should be independent of each other, so it is necessary to clean up storage between tests
-  userStore.clearStore();
+  (userStore as UserStore).clearStore();
 });
 
 describe('Users API', () => {
@@ -123,9 +117,9 @@ describe('Users API', () => {
       expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
       expect(response.body).toEqual({
         violations: [
-          'Property username must be of type string.',
-          'Property age must be of type number.',
-          'Property hobbies must be of type array.',
+          'username must be of type string.',
+          'age must be of type number.',
+          'hobbies must be of type array.',
         ],
       });
     });
@@ -196,9 +190,9 @@ describe('Users API', () => {
       expect(response.status).toBe(HttpStatusCodes.BAD_REQUEST);
       expect(response.body).toEqual({
         violations: [
-          'Property username must be of type string.',
-          'Property age must be of type number.',
-          'Property hobbies must be of type array.',
+          'username must be of type string.',
+          'age must be of type number.',
+          'hobbies must be of type array.',
         ],
       });
     });

@@ -34,6 +34,14 @@ First things first: you should create `.env` file and copy content from `.env.di
 
    By default, it will run on `http://localhost:5000/api/users`.
 
+
+3. Run the application in multi port mode:
+
+   ```bash
+   npm run start:multi
+   ```
+   This command will run the application in multi ports mode. Number of ports(workers) depends on result `os.cpus()` execution    
+
 ## Test the application
 
 ```bash

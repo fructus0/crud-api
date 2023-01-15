@@ -11,6 +11,9 @@
   "root": true,
   "rules": {
     "import/prefer-default-export": "off",
-    "no-restricted-syntax": "off"
+    "no-restricted-syntax": "off",
+    "no-console": "off",
+    "guard-for-in": "off",
+    "class-methods-use-this": "off"
   }
 }

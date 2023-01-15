@@ -11,7 +11,8 @@
     "start:prod": "webpack --mode=production --node-env=production && node dist/main.js",
     "lint:check": "eslint .",
     "tests": "jest",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "start:multi": "nodemon -- --multimode"
   },
   "repository": {
     "type": "git",

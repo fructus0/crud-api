@@ -10,7 +10,7 @@ export class IsArray implements ValidationRule {
 
   public checkProperty = (propertyName: string, propertyValue: any) => {
     if (!Array.isArray(propertyValue)) {
-      return [new FieldValidationError(`Property ${propertyName} must be of type array.`)];
+      return [new FieldValidationError(`${propertyName} must be of type array.`)];
     }
 
     const validationErrors: FieldValidationError[] = [];

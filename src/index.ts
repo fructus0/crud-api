@@ -1,12 +1,16 @@
-import { createServer } from 'http';
 import { config } from 'dotenv';
-import { Request } from './router/request';
-import { Response } from './router/response';
-import { userRouter } from './router/userRouter';
+import { App } from './app';
 
 config();
 
-createServer(
-  { IncomingMessage: Request, ServerResponse: Response },
-  userRouter.actionHandler,
-).listen(process.env.PUBLISHED_PORT);
+const app = new App();
+
+if (!process.env.PUBLISHED_PORT || Number.isNaN(Number(process.env.PUBLISHED_PORT))) {
+  throw new Error('PUBLISHED_PORT is undefined or not a number.');
+}
+
+if (process.argv.includes('--multimode')) {
+  app.listenMultiPortApplication(Number(process.env.PUBLISHED_PORT));
+} else {
+  app.listenApplication(Number(process.env.PUBLISHED_PORT));
+}

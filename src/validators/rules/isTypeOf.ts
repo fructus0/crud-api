@@ -10,7 +10,7 @@ export class IsTypeOf implements ValidationRule {
 
   public checkProperty = (propertyName: string, propertyValue: any) => {
     if (typeof propertyValue !== this.type) {
-      return [new FieldValidationError(`Property ${propertyName} must be of type ${this.type}.`)];
+      return [new FieldValidationError(`${propertyName} must be of type ${this.type}.`)];
     }
 
     return [];

@@ -1,5 +1,7 @@
+import cluster from 'cluster';
 import { User } from '../entities/user/user';
 import { UserDto } from '../entities/user/userDto';
+import { UserMultiModeStore } from './userMultiModeStore';
 
 class UserStore {
   private users: User[] = [];
@@ -44,6 +46,6 @@ class UserStore {
   };
 }
 
-const userStore = new UserStore();
+const userStore = cluster.isWorker ? new UserMultiModeStore() : new UserStore();
 
 export { userStore, UserStore };
