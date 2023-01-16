@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "airbnb-base",
+    "airbnb-typescript/base"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "root": true,
+  "rules": {
+    "import/prefer-default-export": "off",
+    "no-restricted-syntax": "off",
+    "no-console": "off",
+    "guard-for-in": "off",
+    "class-methods-use-this": "off"
+  }
+}
