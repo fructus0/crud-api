@@ -3,8 +3,14 @@
 ## Install
 
 ```bash
-git clone git@github.com:fructus0/crud-api.git
+git clone https://github.com/fructus0/crud-api.git
+```
+
+```bash
 git checkout development
+```
+
+```bash
 npm install
 ```
 
